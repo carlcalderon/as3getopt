@@ -8,7 +8,12 @@ package com.flashfantastic.io
 		{
 			
 		}
-	
+		
+		public function toString():String
+		{
+			return '[getopt]';
+		}
+		
 	}
 
 }
