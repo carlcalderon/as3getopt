@@ -1,19 +1,19 @@
 package com.flashfantastic.io
 {
 
-	public class getopt
+	public class Getopt
 	{
 	
-		public function getopt()
+		public function Getopt()
 		{
-			
+			super();
 		}
 		
 		public function toString():String
 		{
-			return '[getopt]';
+			return '[Getopt]';
 		}
-		
+	
 	}
 
 }
