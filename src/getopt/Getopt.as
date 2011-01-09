@@ -5,13 +5,14 @@ package getopt
 	public class Getopt
 	{
 		
-		protected static final REQUIRE_ORDER	:int	= 1;
-		protected static final PERMUTE			:int	= 2;
-		protected static final RETURN_IN_ORDER	:int	= 3;
+		protected static const REQUIRE_ORDER		:int	= 1;
+		protected static const PERMUTE			:int	= 2;
+		protected static const RETURN_IN_ORDER	:int	= 3;
 		
 		protected var optarg			:String;
+		protected var opterr			:Boolean;
 		protected var optind			:int 		= 0;
-		protected var optopt			:String		= '?';
+		protected var optopt			:*		= '?';
 		protected var nextchar			:String;
 		protected var optstring			:String;
 		protected var long_options		:Array;
@@ -23,12 +24,13 @@ package getopt
 		protected var last_nonopt		:int		= 1;
 		protected var argv				:Array;
 		protected var ordering			:int;
-		protected var progname;
+		protected var progname			:String;
 		
 		private var endparse		:Boolean = false;
 		
 		public function Getopt(progname:String,argv:Array,optstring:String,long_options:Array,long_only:Boolean=false)
 		{
+			super(); // for FlexPMD
 			//TODO use setOptstring (optimize?)
 			if(optstring.length == 0)
 				optstring = ' ';
@@ -95,7 +97,7 @@ package getopt
 			this.opterr = opterr;
 		}
 		
-		public function getOptopt():int
+		public function getOptopt():*
 		{
 			return optopt;
 		}
@@ -111,7 +113,7 @@ package getopt
 			var middle	:int = last_nonopt;
 			var top		:int = optind;
 			var tem		:String;
-			var i		:int:
+			var i		:int;
 			var len		:int;
 			
 			while(top > middle && middle > bottom)
@@ -144,7 +146,7 @@ package getopt
 		}
 		
 		//java: returns int
-		protected function checkLongOption():String 
+		protected function checkLongOption():* 
 		{
 			var pfound		:LongOpt 	= null;
 			var ambig		:Boolean	= false;
@@ -161,7 +163,7 @@ package getopt
 			{
 				if(long_options[i].name.substr(0,nameend) == nextchar.substring(0,nameend))
 				{
-					if(long_options[i].name == nextchar.substring(0,nameend)
+					if(long_options[i].name == nextchar.substring(0,nameend))
 					{
 						pfound = long_options[i];
 						longind = i;
@@ -248,7 +250,7 @@ package getopt
 				nextchar = '';
 				if(pfound.flag != null)
 				{
-					pfound.flag = ''; //java: pfound.flag.setLength(0);
+					//pfound.flag = ''; //java: pfound.flag.setLength(0);
 					pfound.flag += pfound.val; //java: pfound.flag.append(pfound.val);
 					return null;	//java: return 0;
 				}
@@ -258,10 +260,10 @@ package getopt
 			return null; //java: return 0;
 		}
 		
-		public function getopt():int
+		public function getopt():*
 		{
 			optarg = null;
-			if(endparse == true);
+			if(endparse == true)
 				return -1;
 			if(nextchar == null || nextchar == '')
 			{
@@ -318,11 +320,12 @@ package getopt
 					nextchar = String(argv[optind]).substring(1);
 			}
 			
+			var c:*;
 			if(long_options != null && String(argv[optind]).substr(0,2) == '--' 
 				|| (long_only && String(argv[optind]).length > 2) ||
 				optstring.indexOf(String(argv[optind]).charAt(1)) == -1)
 			{
-				var c:int = checkLongOption();
+				c = checkLongOption();
 				if(longopt_handled)
 					return c;
 					
@@ -343,7 +346,7 @@ package getopt
 				
 			}
 			
-			var c:int = nextchar.charAt(0);
+			c = nextchar.charAt(0);
 			if(nextchar.length > 1)
 				nextchar = nextchar.substring(1);
 			else
