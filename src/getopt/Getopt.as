@@ -5,14 +5,19 @@ package getopt
 	public class Getopt
 	{
 		
-		protected static const REQUIRE_ORDER		:int	= 1;
+		public static const END_OF_ARGS		:String = '-1';
+		public static const LONG_OPTION		:String = '0';
+		public static const INVALID_ORDER 	:String = '1';
+		public static const LONG_GUESS		:String = '2';
+		
+		protected static const REQUIRE_ORDER	:int	= 1;
 		protected static const PERMUTE			:int	= 2;
 		protected static const RETURN_IN_ORDER	:int	= 3;
 		
 		protected var optarg			:String;
-		protected var opterr			:Boolean;
+		protected var opterr			:Boolean	= true;
 		protected var optind			:int 		= 0;
-		protected var optopt			:*		= '?';
+		protected var optopt			:String		= '?';
 		protected var nextchar			:String;
 		protected var optstring			:String;
 		protected var long_options		:Array;
@@ -146,7 +151,7 @@ package getopt
 		}
 		
 		//java: returns int
-		protected function checkLongOption():* 
+		protected function checkLongOption():String 
 		{
 			var pfound		:LongOpt 	= null;
 			var ambig		:Boolean	= false;
@@ -185,10 +190,10 @@ package getopt
 			{
 				if(opterr)
 				{
-					//TODO push error ('getopt.ambigious'). throw?
+					GetoptError.push('ambigious',progname,argv[optind]);
 				}
 				nextchar = '';
-				optopt = 0;
+				optopt = '0';
 				++optind;
 				
 				return '?';
@@ -211,13 +216,15 @@ package getopt
 					{
 						if(opterr)
 						{
+							// -- option
 							if(argv[optind - 1].substr(0,2) == '--')
 							{
-								//TODO push warning ('getopt.arguments1').
+								GetoptError.push('arguments1',progname,pfound.name);
 							}
+							// +option or -option
 							else
 							{
-								//TODO push warning ('getopt.arguments2')
+								GetoptError.push('arguments2',progname,String(argv[optind-1]).charAt(0),pfound.name);
 							}
 						}
 						nextchar = '';
@@ -237,7 +244,7 @@ package getopt
 					{
 						if(opterr)
 						{
-							//TODO push error ('getopt.requires')
+							GetoptError.push('requires',progname,argv[optind-1]);
 						}
 						nextchar = '';
 						optopt = pfound.val;
@@ -250,21 +257,21 @@ package getopt
 				nextchar = '';
 				if(pfound.flag != null)
 				{
-					//pfound.flag = ''; //java: pfound.flag.setLength(0);
-					pfound.flag += pfound.val; //java: pfound.flag.append(pfound.val);
-					return null;	//java: return 0;
+					pfound.flag = '';
+					pfound.flag += pfound.val;
+					return '0';
 				}
 				return pfound.val;
 			}
 			longopt_handled = false;
-			return null; //java: return 0;
+			return '0';
 		}
 		
-		public function getopt():*
+		public function getopt():String
 		{
 			optarg = null;
 			if(endparse == true)
-				return -1;
+				return '-1';
 			if(nextchar == null || nextchar == '')
 			{
 				if(last_nonopt > optind)
@@ -302,16 +309,16 @@ package getopt
 				{
 					if(first_nonopt != last_nonopt)
 						optind = first_nonopt;
-					return -1;
+					return '-1';
 				}
 				
 				if(argv[optind] == '' || String(argv[optind]).charAt(0) != '-' || argv[optind] == '-')
 				{
 					if(ordering == REQUIRE_ORDER)
-						return -1;
+						return '-1';
 						
 					optarg = argv[optind++];
-					return 1;
+					return '1';
 				}
 				
 				if(String(argv[optind]).substr(0,2) == '--')
@@ -320,7 +327,7 @@ package getopt
 					nextchar = String(argv[optind]).substring(1);
 			}
 			
-			var c:*;
+			var c:String;
 			if(long_options != null && String(argv[optind]).substr(0,2) == '--' 
 				|| (long_only && String(argv[optind]).length > 2) ||
 				optstring.indexOf(String(argv[optind]).charAt(1)) == -1)
@@ -331,18 +338,18 @@ package getopt
 					
 				if(!long_only || String(argv[optind]).substr(0,2) == '--')
 				{
-					//TODO push warning ('getopt.unrecognized')
+					GetoptError.push('unrecognized',progname,nextchar);
 				}
 				else
 				{
-					//TODO push warning ('getopt.unrecognized2')
+					GetoptError.push('unrecognized2',progname,String(argv[optind]).charAt(0),nextchar);
 				}
 				
 				nextchar = '';
 				++optind;
-				optopt = 0;
+				optopt = '0';
 				
-				return 0; //java: return '?';
+				return '?';
 				
 			}
 			
@@ -365,16 +372,16 @@ package getopt
 				{
 					if(posixly_correct)
 					{
-						//TODO push error ('getopt.illegal')
+						GetoptError.push('illegal',progname,c);
 					}
 					else
 					{
-						//TODO push error ('getopt.invalid')
+						GetoptError.push('invalid',progname,c);
 					}
 				}
 				
 				optopt = c;
-				return 0; //java: return '?';
+				return '?';
 			}
 			
 			if(temp.charAt(0) == 'W' && temp.length > 1 && temp.charAt(1) == ';')
@@ -387,7 +394,7 @@ package getopt
 				{
 					if(opterr)
 					{
-						//TODO push error ('getopt.requires2')
+						GetoptError.push('requires2',progname,c);
 					}
 					optopt = c;
 					if(optstring.charAt(0) == ':')
@@ -439,7 +446,7 @@ package getopt
 					{
 						if(opterr)
 						{
-							//TODO push error ('getopt.requires2')
+							GetoptError.push('requires2',progname,c);
 						}
 						optopt = c;
 						if(optstring.charAt(0) == ':')
@@ -458,7 +465,7 @@ package getopt
 							{
 								if(opterr)
 								{
-									//TODO push error('getopt.requires2')
+									GetoptError.push('requires2',progname,c);
 								}
 								optopt = c;
 								if(optstring.charAt(0) == ':')
@@ -490,5 +497,38 @@ package getopt
 		}
 		
 	}
+
+}
+
+internal class GetoptError
+{
+	private static const messages_en:Object = 
+	{
+		ambigious:'{0}: option "{1}" is ambigious',
+		arguments1:'{0}: option "--{1}" doesn\'t allow an argument',
+		arguments2:'{0}: option "{1}{2}" doesn\'t allow and argument',
+		requires:'{0}: option "{1}" requires and argument',
+		unrecognized:'{0}: unrecognized option "--{1}"',
+		unrecognized2:'{0}: unrecognized option "--{1}{2}"',
+		illegal:'{0}: illegal option -- {1}',
+		invalid:'{0}: invalid option -- {1}',
+		requires2:'{0}: option requires an argument -- {1}',
+		invalidValue:'Invalid value {0} for parameter "hasArg"',
+		invalidError:'Invalid error message "{0}"'
+	}
+	
+	public static function push(id:String,...args):void
+	{
+		var msg:String = messages_en[id];
+		if(!msg) trace(msg['invalidError']);
+		else
+		{
+			for (var i:int = 0; i < args.length; i++)
+				msg = msg.split('{'+i+'}').join(args[i]);
+			trace(msg);
+		}
+	}
+	
+	public function GetoptError(){ super(); /* for FlexPMD */ }
 
 }
