@@ -24,7 +24,7 @@
 
 package gnu.getopt
 {
-	import getopt.LongOpt;
+	import gnu.getopt.LongOpt;
 	
 /**************************************************************************/
 	
