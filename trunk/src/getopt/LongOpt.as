@@ -45,7 +45,7 @@ package getopt
 		 * here when this long option is encountered.  If this is null, the value
 		 * stored in "val" is treated as the name of an equivalent short option.
 		 */
-		protected var _flag		:String;
+		protected var _flag		:String = null;
 		/**
 		 * The value to store in "flag" if flag is not null, otherwise the
 		 * equivalent short option character for this long option.
