@@ -1,9 +1,36 @@
-package getopt
+/**************************************************************************
+/* Getopt.as -- Actionscript 3 port of GNU getopt from glibc 2.0.6
+/*              Based on Java port by Aaron M. Renn 1998
+/*
+/* Copyright (c) 1987-1997 Free Software Foundation, Inc.
+/* Java Port Copyright (c) 1998 by Aaron M. Renn (arenn@urbanophile.com)
+/* AS3 Port Copyright (c) 2010 by Carl Calderon (carl.calderon@gmail.com)
+/*
+/* This program is free software; you can redistribute it and/or modify
+/* it under the terms of the GNU Library General Public License as published 
+/* by  the Free Software Foundation; either version 2 of the License or
+/* (at your option) any later version.
+/*
+/* This program is distributed in the hope that it will be useful, but
+/* WITHOUT ANY WARRANTY; without even the implied warranty of
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+/* GNU Library General Public License for more details.
+/*
+/* You should have received a copy of the GNU Library General Public License
+/* along with this program; see the file COPYING.LIB.  If not, write to 
+/* the Free Software Foundation Inc., 59 Temple Place - Suite 330, 
+/* Boston, MA  02111-1307 USA
+/**************************************************************************/
+
+package gnu.getopt
 {
 	
 	/**
 	 * LongOpt definition of GNU getopt port. Based on Java port
-	 * by Aaron M. Renn.
+	 * by Aaron M. Renn. An array of LongOpt objects is passed to the Getopt
+	 * object to define the list of valid long options for a given parsing
+	 * session.  Refer to the getopt documentation for details on the
+	 * format of long options.
 	 * 
 	 * @langversion ActionScript 3
 	 * @playerversion Flash 9.0.0 
